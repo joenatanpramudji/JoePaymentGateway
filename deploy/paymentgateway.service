@@ -1,0 +1,32 @@
+[Unit]
+Description=JoePaymentGateway Spring Boot Application
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/app
+
+# Application JAR
+ExecStart=/usr/bin/java -jar /home/ec2-user/app/app.jar
+
+# Environment variables — these connect to RDS and configure the app
+Environment=SPRING_PROFILES_ACTIVE=prod
+Environment=DB_URL=jdbc:postgresql://YOUR_RDS_ENDPOINT:5432/paymentgateway
+Environment=DB_USERNAME=pgadmin
+Environment=DB_PASSWORD=YOUR_RDS_PASSWORD
+Environment=SECURITY_USER=gateway_admin
+Environment=SECURITY_PASSWORD=YOUR_API_PASSWORD
+Environment=CRYPTO_BDK=YOUR_256BIT_HEX_KEY
+
+# Auto-restart on failure
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=paymentgateway
+
+[Install]
+WantedBy=multi-user.target
