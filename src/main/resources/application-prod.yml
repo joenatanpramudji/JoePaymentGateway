@@ -1,0 +1,65 @@
+# ==============================================================================
+# JoePaymentGateway - PROD Environment
+# ==============================================================================
+# Production environment on AWS EC2 + RDS.
+# ALL sensitive values MUST come from environment variables.
+# Never hardcode secrets in this file.
+#
+# Activate with: SPRING_PROFILES_ACTIVE=prod (set on EC2 instance)
+# ==============================================================================
+
+spring:
+  # ------------------------------------------------
+  # AWS RDS PostgreSQL connection
+  # ------------------------------------------------
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # ------------------------------------------------
+  # JPA: validate schema only — migrations via Flyway
+  # ------------------------------------------------
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  # ------------------------------------------------
+  # Security credentials from environment
+  # ------------------------------------------------
+  security:
+    user:
+      name: ${SECURITY_USER}
+      password: ${SECURITY_PASSWORD}
+
+# ------------------------------------------------
+# Server port (behind reverse proxy / load balancer)
+# ------------------------------------------------
+server:
+  port: ${SERVER_PORT:8080}
+
+# ------------------------------------------------
+# Production logging — minimal, structured
+# ------------------------------------------------
+logging:
+  level:
+    root: WARN
+    com.joe.paymentgateway: INFO
+    org.springframework.web: WARN
+
+# ------------------------------------------------
+# Crypto configuration — BDK from secure env var
+# ------------------------------------------------
+app:
+  crypto:
+    bdk: ${CRYPTO_BDK}
+    key-store-type: SECURE

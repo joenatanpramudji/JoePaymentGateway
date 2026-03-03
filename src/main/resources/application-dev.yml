@@ -1,0 +1,60 @@
+# ==============================================================================
+# JoePaymentGateway - DEV Environment
+# ==============================================================================
+# Development environment pointing to a real PostgreSQL database.
+# Use this when testing against a database similar to production.
+#
+# Activate with: -Dspring.profiles.active=dev
+# ==============================================================================
+
+spring:
+  # ------------------------------------------------
+  # PostgreSQL connection (local or Docker instance)
+  # Override via environment variables if needed.
+  # ------------------------------------------------
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/paymentgateway_dev}
+    username: ${DB_USERNAME:pguser}
+    password: ${DB_PASSWORD:pgpassword}
+    driver-class-name: org.postgresql.Driver
+
+  # ------------------------------------------------
+  # JPA: update schema without dropping data
+  # ------------------------------------------------
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  # ------------------------------------------------
+  # Dev security credentials (override via env vars)
+  # ------------------------------------------------
+  security:
+    user:
+      name: ${SECURITY_USER:dev_admin}
+      password: ${SECURITY_PASSWORD:dev_password}
+
+# ------------------------------------------------
+# Server port
+# ------------------------------------------------
+server:
+  port: 8080
+
+# ------------------------------------------------
+# Moderate logging — SQL visible, less framework noise
+# ------------------------------------------------
+logging:
+  level:
+    root: INFO
+    com.joe.paymentgateway: DEBUG
+    org.hibernate.SQL: DEBUG
+
+# ------------------------------------------------
+# Crypto configuration for dev environment
+# ------------------------------------------------
+app:
+  crypto:
+    # Override via environment variable in real dev setup
+    bdk: ${CRYPTO_BDK:0123456789ABCDEFFEDCBA9876543210FEDCBA98765432100123456789ABCDEF}
+    key-store-type: IN_MEMORY
